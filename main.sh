@@ -7,10 +7,9 @@ RECIPIENTS=(
     badi@iu.edu
     lee212@indiana.edu
 )
-RECIPIENTS=(badi@iu.edu)
 DEV_EMAIL=badi@iu.edu
 
-KEY='host_india contact_badi_AT_iu_edu'
+KEY=india-key
 VENV=venv
 
 
