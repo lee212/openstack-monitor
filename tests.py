@@ -97,7 +97,7 @@ class NovaTester(object):
     def get_ip(self):
         assert self._machine is not None
 
-        print('Getting IPv4 for {}'.format(self._machine))
+        print('Getting IPv4')
         for i in xrange(self.attempts):
             output = nova(['show', self._machine])
             ip = get_machine_intnet(output)
@@ -112,8 +112,7 @@ class NovaTester(object):
     def ping(self, count=10):
         if not self._int_ip:
             self.get_ip()
-        print('Ping {machine} at {addr}'.format(machine=self._machine,
-                                                addr=self._int_ip))
+        print('Ping {addr}'.format(addr=self._int_ip))
         try:
             ping(['-c', str(count), self._int_ip])
         except subprocess.CalledProcessError, e:
@@ -133,8 +132,7 @@ class NovaTester(object):
         assert self._int_ip is not None
         attempts = attempts or self.attempts
 
-        print('Waiting for sshd to start on {machine} at {addr}'
-              .format(machine=self._machine, addr=self._int_ip))
+        print('Waiting for sshd to start on {addr}'.format(addr=self._int_ip))
 
         for i in xrange(attempts):
             try:
