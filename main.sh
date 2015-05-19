@@ -23,6 +23,11 @@ setup() {
     pip install -r requirements.txt
 }
 
+cleanup() {
+    test -d $VENV && rm -vr $VENV
+}
+
+trap cleanup EXIT
 
 setup > SETUP.txt 2>&1
 if ! test $? -eq 0; then
