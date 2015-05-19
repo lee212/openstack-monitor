@@ -49,7 +49,9 @@ source $VENV/bin/activate
 time ./novatest.py -k "$KEY" >OUTPUT.txt 2>&1
 
 if ! test $? -eq 0; then
-    subject="$SUBJECT FAIL"
-    mail -s "$subject" ${RECIPIENTS[@]} <OUTPUT.txt
+    status="FAIL"
+    mail -s "$SUBJECT $status" ${RECIPIENTS[@]} <OUTPUT.txt
+else
+    status="PASS"
 fi
 
