@@ -39,7 +39,6 @@ source $VENV/bin/activate
 
 if ! test $? -eq 0; then
     subject="$SUBJECT FAIL"
-else
-    subject="$SUBJECT PASS"
+    mail -s "$subject" ${RECIPIENTS[@]} <OUTPUT.txt
 fi
-mail -s "$subject" ${RECIPIENTS[@]} <OUTPUT.txt
+
