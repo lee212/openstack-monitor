@@ -1,0 +1,1 @@
+*/10 * * * * cd /N/u/badi/novatest && ./main.sh >cron.log 2>&1
