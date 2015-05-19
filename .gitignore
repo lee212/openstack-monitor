@@ -1,0 +1,6 @@
+*.pyc
+OUTPUT.txt
+*~
+times.txt
+venv
+SETUP.txt
