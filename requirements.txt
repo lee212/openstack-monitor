@@ -1,0 +1,1 @@
+git+git://github.com/badi/pyshc.git#egg=pyshc
