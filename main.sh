@@ -13,10 +13,14 @@ KEY=india-key
 VENV=venv
 
 
-setup() {
-    module load openstack
-    source ~/.cloudmesh/clouds/india/juno/openrc.sh
+module load python
+which pip
+which virtualenv
+module load openstack
+source ~/.cloudmesh/clouds/india/juno/openrc.sh
 
+
+setup() {
     test -d $VENV || virtualenv $VENV
     source $VENV/bin/activate
     pip install -r requirements.txt
