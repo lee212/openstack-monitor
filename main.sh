@@ -12,23 +12,30 @@ DEV_EMAIL=badi@iu.edu
 KEY=india-key
 VENV=venv
 
-
-module load python
-which pip
-which virtualenv
-module load openstack
-source ~/.cloudmesh/clouds/india/juno/openrc.sh
-
-
 setup() {
     test -d $VENV || virtualenv $VENV
     source $VENV/bin/activate
     pip install -r requirements.txt
 }
 
+notify-dev() {
+    local description="$1"
+    local contents_file="$2"
+    mail -s "$SUBJECT $description" $DEV_EMAIL <$contents_file
+}
+
 cleanup() {
     test -d $VENV && rm -vr $VENV
 }
+
+trap "notify-dev 'CRON Failure' cron.log" EXIT
+set -e
+module load python
+which pip
+which virtualenv
+module load openstack
+source ~/.cloudmesh/clouds/india/juno/openrc.sh
+set +e
 
 trap cleanup EXIT
 
