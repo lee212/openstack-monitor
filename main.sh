@@ -25,26 +25,21 @@ notify-dev() {
 }
 
 cleanup() {
-    test -d $VENV && rm -vr $VENV
+    test -d $VENV && rm -r $VENV
 }
 
-trap "notify-dev 'CRON Failure' cron.log" EXIT
+trap "notify-dev 'Init Failure' cron.log" EXIT
 set -e
 module load python
 which pip
 which virtualenv
 module load openstack
 source ~/.cloudmesh/clouds/india/juno/openrc.sh
-set +e
+setup
+
 
 trap cleanup EXIT
-
-setup > SETUP.txt 2>&1
-if ! test $? -eq 0; then
-    mail -s "$SUBJECT Setup Failure" $DEV_EMAIL <SETUP.txt
-    exit 1
-fi
-
+set +e
 source $VENV/bin/activate
 time ./novatest.py -k "$KEY" >OUTPUT.txt 2>&1
 
@@ -55,3 +50,4 @@ else
     status="PASS"
 fi
 
+echo $status
