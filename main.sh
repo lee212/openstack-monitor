@@ -13,7 +13,8 @@ KEY=india-key
 VENV=venv
 
 setup() {
-    test -d $VENV || virtualenv $VENV
+    test -d $VENV && rm -r $VENV
+    virtualenv $VENV
     source $VENV/bin/activate
     pip install -r requirements.txt
 }
