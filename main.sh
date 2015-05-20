@@ -22,7 +22,7 @@ setup() {
 notify-dev() {
     local description="$1"
     local contents_file="$2"
-    mail -s "$SUBJECT $description" $DEV_EMAIL <$contents_file
+    mail -s "$SUBJECT [DEV] $description" $DEV_EMAIL <$contents_file
 }
 
 cleanup() {
