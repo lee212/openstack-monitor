@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import tests
+import failures
 import time
 import os
 from os.path import expanduser, abspath
@@ -26,6 +27,8 @@ def getopts(args=None):
                    help='Path to the private ssh key')
     p.add_argument('-t', '--times', default='times.txt',
                    help='Save execution times here')
+    p.add_argument('-x', '--failures', default='failures.txt',
+                   help='Save the type of failures here')
 
     opts = p.parse_args(args=args)
 
@@ -60,7 +63,15 @@ def run_tests(name=None, key=None, ssh_key=None):
 def main(opts):
     today = int(time.time())
     t0 = time.time()
-    run_tests(name=opts.name, key=opts.key_name, ssh_key=opts.ssh_key_path)
+
+    try:
+        run_tests(name=opts.name, key=opts.key_name, ssh_key=opts.ssh_key_path)
+    except failures.TestFailure, e:
+        with open(opts.failures, 'a') as fd:
+            fd.write('{today},{name}\n'
+                     .format(today=today, name=e.name))
+        raise
+
     t = time.time() - t0
 
     with open(opts.times, 'a') as fd:

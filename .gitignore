@@ -5,3 +5,4 @@ times.txt
 venv
 SETUP.txt
 cron.log
+failures.txt

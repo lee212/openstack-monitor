@@ -2,16 +2,19 @@ from pyshc.sh import Sh
 from time import sleep
 import subprocess
 import pipes
+from failures import \
+    CleanupTestFailure, \
+    BootTestFailure, \
+    GetIPTestFailure, \
+    PingTestFailure, \
+    SSHDTestFailure, \
+    SSHTestFailure
 
 
 nova = Sh('nova')
 ping = Sh('ping')
 ssh = Sh('ssh')
 nc = Sh('nc')
-
-
-class TestFailure(Exception):
-    pass
 
 
 def get_machine_property(nova_show_output, property):
@@ -59,7 +62,7 @@ class NovaTester(object):
         try:
             nova(['delete', self._machine])
         except subprocess.CalledProcessError, e:
-            raise TestFailure(
+            raise CleanupTestFailure(
                 'Could not delete instance {machine} exit {ret}\n{out}'
                 .format(machine=self._machine, ret=e.returncode, out=e.output))
 
@@ -82,7 +85,7 @@ class NovaTester(object):
         try:
             out = nova(boot)
         except subprocess.CalledProcessError, e:
-            raise TestFailure(
+            raise BootTestFailure(
                 ' '.join([
                     'Boot command {cmd} failed with non-zero status {ret}\n'
                     .format(cmd=e.cmd, ret=e.returncode),
@@ -105,7 +108,7 @@ class NovaTester(object):
                 self._int_ip = ip
                 return ip
             sleep(self.delay)
-        raise TestFailure(
+        raise GetIPTestFailure(
             'Exceeded max attempts {max} to retrieve IP address for {machine}'
             .format(max=self.attempts, machine=self._machine))
 
@@ -116,11 +119,11 @@ class NovaTester(object):
         try:
             ping(['-c', str(count), self._int_ip])
         except subprocess.CalledProcessError, e:
-            raise TestFailure(
+            raise PingTestFailure(
                 ('Command {cmd} failed {ret}'
                  + ' when pinging machine {machine} at {addr}'
                  + '\n'
-                 + 'ERROR########################################\n'
+                 + 'ERROR\n########################################\n'
                  + '{err}\n')
                 .format(cmd=e.cmd,
                         ret=e.returncode,
@@ -142,7 +145,7 @@ class NovaTester(object):
                 continue
             return True
 
-        raise TestFailure('Timeout waiting for sshd to start')
+        raise SSHDTestFailure('Timeout waiting for sshd to start')
 
     def ssh(self, user='ubuntu', key='~/.ssh/id_rsa', remote_cmd='ifconfig'):
         assert self._int_ip is not None
@@ -154,11 +157,11 @@ class NovaTester(object):
         try:
             out = ssh(cmd)
         except subprocess.CalledProcessError, e:
-            raise TestFailure(
-                ('Failed to ssh to machine {machine} at {addr} with {ret}\n',
-                 + 'STDOUT\n########################################\n',
-                 + out + '\n',
-                 + 'STDERR\n########################################\n',
+            raise SSHTestFailure(
+                ('Failed to ssh to machine {machine} at {addr} with {ret}\n'
+                 + 'STDOUT\n########################################\n'
+                 + out + '\n'
+                 + 'STDERR\n########################################\n'
                  + e.output)
                 .format(machine=self._machine,
                         addr=self._int_ip,
